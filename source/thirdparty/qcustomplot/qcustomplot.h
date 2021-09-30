@@ -3986,6 +3986,8 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   virtual void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+
+  virtual bool event(QEvent *event) Q_DECL_OVERRIDE;
   
   // introduced virtual methods:
   virtual void draw(QCPPainter *painter);

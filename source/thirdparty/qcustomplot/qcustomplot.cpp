@@ -15710,6 +15710,23 @@ void QCustomPlot::wheelEvent(QWheelEvent *event)
   event->accept(); // in case QCPLayerable reimplementation manipulates event accepted state. In QWidget event system, QCustomPlot wants to accept the event.
 }
 
+#include <iostream>
+
+bool QCustomPlot::event(QEvent* event)
+{
+#ifdef Q_OS_MACOS
+    auto eventType = event->type();
+
+    if(eventType != QEvent::ChildAdded && eventType != QEvent::ChildRemoved)
+    {
+        std::cerr << "QCustomPlot::event(" << eventType << ")\n";
+        std::cerr.flush();
+    }
+#endif
+
+    return QObject::event(event);
+}
+
 /*! \internal
   
   This function draws the entire plot, including background pixmap, with the specified \a painter.
