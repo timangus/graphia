@@ -1211,7 +1211,7 @@ void QCPLayer::replot()
       qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
   } else {
 #ifdef Q_OS_MACOS
-    std::cerr << "QCPLayer::replot\n"; std::cerr.flush();
+    std::cerr << "QCPLayer::replot" << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
 #endif
     mParentPlot->replot();
   }
@@ -2938,6 +2938,10 @@ void QCPSelectionRect::moveSelection(QMouseEvent *event)
 {
   mRect.setBottomRight(event->pos());
   emit changed(mRect, event);
+#ifdef Q_OS_MACOS
+  std::cerr << "QCPSelectionRect::moveSelection" << event->type() << "\n"; std::cerr.flush();
+#endif
+
   layer()->replot();
 }
 
@@ -15130,7 +15134,7 @@ void QCustomPlot::deselectAll()
 void QCustomPlot::replot(QCustomPlot::RefreshPriority refreshPriority)
 {
 #ifdef Q_OS_MACOS
-  std::cerr << "QCustomPlot::replot on thread " << u::currentThreadName().toStdString() << " " << refreshPriority << "\n";
+  std::cerr << "QCustomPlot::replot on thread " << u::currentThreadName().toStdString() << " " << refreshPriority;
   std::cerr.flush();
 #endif
 
@@ -15140,17 +15144,34 @@ void QCustomPlot::replot(QCustomPlot::RefreshPriority refreshPriority)
     {
       mReplotQueued = true;
 #ifdef Q_OS_MACOS
-      std::cerr << "  queueing...\n";
+      std::cerr << " ...queueing\n";
       std::cerr.flush();
 #endif
 
       QTimer::singleShot(0, this, SLOT(replot()));
     }
+#ifdef Q_OS_MACOS
+    else {
+      std::cerr << " ...already queued\n";
+      std::cerr.flush();
+    }
+#endif
     return;
   }
   
+#ifdef Q_OS_MACOS
+  std::cerr << " ...proceeding\n";
+  std::cerr.flush();
+#endif
+
   if (mReplotting) // incase signals loop back to replot slot
+  {
+#ifdef Q_OS_MACOS
+    std::cerr << "  mReplotting\n";
+    std::cerr.flush();
+#endif
     return;
+  }
   mReplotting = true;
   mReplotQueued = false;
   emit beforeReplot();
@@ -16144,13 +16165,14 @@ void QCustomPlot::processRectSelection(QRect rect, QMouseEvent *event)
       }
     }
   }
-  
+
+#ifdef Q_OS_MACOS
+  std::cerr << "QCustomPlot::processRectSelection rpQueuedReplot" << selectionStateChanged << "\n"; std::cerr.flush();
+#endif
+
   if (selectionStateChanged)
   {
     emit selectionChangedByUser();
-#ifdef Q_OS_MACOS
-    std::cerr << "QCustomPlot::processRectSelection rpQueuedReplot\n"; std::cerr.flush();
-#endif
     replot(rpQueuedReplot);
   } else if (mSelectionRect)
     mSelectionRect->layer()->replot();

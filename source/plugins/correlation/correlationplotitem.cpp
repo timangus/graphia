@@ -269,7 +269,12 @@ void CorrelationPlotWorker::renderPixmap()
 
     auto* tooltipLayer = _customPlot->layer(QStringLiteral("tooltipLayer"));
     if(tooltipLayer != nullptr && _updateType >= CorrelationPlotUpdateType::RenderAndTooltips)
+    {
+#ifdef Q_OS_MACOS
+        std::cerr << "CorrelationPlotWorker::renderPixmap tooltipLayer->replot()" << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+#endif
         tooltipLayer->replot();
+    }
 
     if(_updateType >= CorrelationPlotUpdateType::ReplotAndRenderAndTooltips)
         _customPlot->replot(QCustomPlot::rpImmediateRefresh);
