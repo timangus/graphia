@@ -231,6 +231,10 @@ void CorrelationPlotWorker::renderPixmap()
 
         u::setCurrentThreadName(QStringLiteral("CorrPlotRender"));
         _threadId = u::currentThreadId();
+
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+        std::cerr << "CorrelationPlotWorker::renderPixmap setOpenGl " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+#endif
     }
 
     if(_threadId != u::currentThreadId())
@@ -270,14 +274,19 @@ void CorrelationPlotWorker::renderPixmap()
     auto* tooltipLayer = _customPlot->layer(QStringLiteral("tooltipLayer"));
     if(tooltipLayer != nullptr && _updateType >= CorrelationPlotUpdateType::RenderAndTooltips)
     {
-#ifdef Q_OS_MACOS
-        std::cerr << "CorrelationPlotWorker::renderPixmap tooltipLayer->replot()" << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+        std::cerr << "CorrelationPlotWorker::renderPixmap tooltipLayer->replot() " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
 #endif
         tooltipLayer->replot();
     }
 
     if(_updateType >= CorrelationPlotUpdateType::ReplotAndRenderAndTooltips)
+    {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+        std::cerr << "CorrelationPlotWorker::renderPixmap _customPlot->replot(QCustomPlot::rpImmediateRefresh) " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+#endif
         _customPlot->replot(QCustomPlot::rpImmediateRefresh);
+    }
 
     _updateType = CorrelationPlotUpdateType::None;
 

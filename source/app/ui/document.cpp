@@ -518,6 +518,9 @@ void Document::initialiseLayoutSettingsModel()
 
 bool Document::openUrl(const QUrl& url, const QString& type, QString pluginName, const QVariantMap& parameters)
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "Document::openUrl " << url.toString().toStdString() << "\n"; std::cerr.flush();
+#endif
     std::unique_ptr<IParser> parser;
     Loader* loader = nullptr;
 

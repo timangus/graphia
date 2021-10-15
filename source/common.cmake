@@ -58,6 +58,10 @@ if(APPLE)
     add_definitions(-D_LIBCPP_DISABLE_AVAILABILITY)
 endif()
 
+if(APPLE)
+    add_definitions(-DDEBUG_MACOS_QCUSTOMPLOT_CRASH)
+endif()
+
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     # GCC
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wlogical-op -Wstrict-null-sentinel \

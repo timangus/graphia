@@ -21,9 +21,15 @@
 #include <QMouseEvent>
 #include <QCoreApplication>
 
+#include <iostream>
+
 QCustomPlotQuickItem::QCustomPlotQuickItem(int multisamples, QQuickItem* parent) :
     QQuickPaintedItem(parent)
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "QCustomPlotQuickItem::QCustomPlotQuickItem\n"; std::cerr.flush();
+#endif
+
 #ifdef Q_OS_MACOS
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
 #warning Check if crash in QOpenGLContext::surface/QWindow::surfaceHandle still occurs on macOS
