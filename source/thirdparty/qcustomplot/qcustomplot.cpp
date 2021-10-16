@@ -1211,7 +1211,7 @@ void QCPLayer::replot()
       qDebug() << Q_FUNC_INFO << "no valid paint buffer associated with this layer";
   } else {
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-    std::cerr << "QCPLayer::replot" << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+    std::cerr << mParentPlot << " QCPLayer::replot " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
 #endif
     mParentPlot->replot();
   }
@@ -2939,7 +2939,7 @@ void QCPSelectionRect::moveSelection(QMouseEvent *event)
   mRect.setBottomRight(event->pos());
   emit changed(mRect, event);
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-  std::cerr << "QCPSelectionRect::moveSelection" << event->type() << "\n"; std::cerr.flush();
+  std::cerr << layer()->parentPlot() << " QCPSelectionRect::moveSelection" << event->type() << "\n"; std::cerr.flush();
 #endif
 
   layer()->replot();
@@ -9585,7 +9585,7 @@ void QCPAxis::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
       mParentPlot->setNotAntialiasedElements(QCP::aeAll);
 
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-    std::cerr << "QCPAxis::mouseMoveEvent rpQueuedReplot\n"; std::cerr.flush();
+    std::cerr << mParentPlot << " QCPAxis::mouseMoveEvent rpQueuedReplot\n"; std::cerr.flush();
 #endif
     mParentPlot->replot(QCustomPlot::rpQueuedReplot);
   }
@@ -9656,6 +9656,10 @@ void QCPAxis::wheelEvent(QWheelEvent *event)
   const double wheelSteps = delta/120.0; // a single step delta is +/-120 usually
   const double factor = qPow(mAxisRect->rangeZoomFactor(orientation()), wheelSteps);
   scaleRange(factor, pixelToCoord(orientation() == Qt::Horizontal ? pos.x() : pos.y()));
+
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  std::cerr << mParentPlot << " QCPAxis::wheelEvent\n"; std::cerr.flush();
+#endif
   mParentPlot->replot();
 }
 
@@ -13701,7 +13705,7 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   setViewport(rect()); // needs to be called after mPlotLayout has been created
   
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-  std::cerr << "QCustomPlot::QCustomPlot rpQueuedReplot\n"; std::cerr.flush();
+  std::cerr << this << " QCustomPlot::QCustomPlot rpQueuedReplot\n"; std::cerr.flush();
 #endif
   replot(rpQueuedReplot);
 }
@@ -15142,7 +15146,7 @@ void QCustomPlot::replot(QCustomPlot::RefreshPriority refreshPriority)
     case rpRefreshHint:      rpString = "rpRefreshHint"; break;
     case rpQueuedReplot:     rpString = "rpQueuedReplot"; break;
   }
-  std::cerr << "QCustomPlot::replot on thread " << u::currentThreadName().toStdString() << " " << rpString.toStdString();
+  std::cerr << this << " QCustomPlot::replot on thread " << u::currentThreadName().toStdString() << " " << rpString.toStdString();
   std::cerr.flush();
 #endif
 
@@ -15733,7 +15737,7 @@ void QCustomPlot::mouseReleaseEvent(QMouseEvent *event)
   if (noAntialiasingOnDrag())
   {
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-    std::cerr << "QCustomPlot::mouseReleaseEvent rpQueuedReplot\n"; std::cerr.flush();
+    std::cerr << this << " QCustomPlot::mouseReleaseEvent rpQueuedReplot\n"; std::cerr.flush();
 #endif
     replot(rpQueuedReplot);
   }
@@ -15775,7 +15779,7 @@ bool QCustomPlot::event(QEvent* event)
     if(eventType != QEvent::ChildAdded && eventType != QEvent::ChildRemoved)
     {
         QMetaEnum metaEnum = QMetaEnum::fromType<QEvent::Type>();
-        std::cerr << "QCustomPlot::event(" << metaEnum.valueToKey(eventType) << ")";
+        std::cerr << this << " QCustomPlot::event(" << metaEnum.valueToKey(eventType) << ")";
         if(sender() != nullptr)
             std::cerr << " from " << sender()->objectName().toStdString();
 
@@ -16180,7 +16184,7 @@ void QCustomPlot::processRectSelection(QRect rect, QMouseEvent *event)
   }
 
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-  std::cerr << "QCustomPlot::processRectSelection rpQueuedReplot" << selectionStateChanged << "\n"; std::cerr.flush();
+  std::cerr << this << " QCustomPlot::processRectSelection rpQueuedReplot" << selectionStateChanged << "\n"; std::cerr.flush();
 #endif
 
   if (selectionStateChanged)
@@ -16212,7 +16216,7 @@ void QCustomPlot::processRectZoom(QRect rect, QMouseEvent *event)
     axisRect->zoom(QRectF(rect), affectedAxes);
   }
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-  std::cerr << "QCustomPlot::processRectZoom rpQueuedReplot\n"; std::cerr.flush();
+  std::cerr << this << " QCustomPlot::processRectZoom rpQueuedReplot\n"; std::cerr.flush();
 #endif
   replot(rpQueuedReplot); // always replot to make selection rect disappear
 }
@@ -16267,7 +16271,7 @@ void QCustomPlot::processPointSelection(QMouseEvent *event)
   {
     emit selectionChangedByUser();
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-    std::cerr << "QCustomPlot::processPointSelection rpQueuedReplot\n"; std::cerr.flush();
+    std::cerr << this << " QCustomPlot::processPointSelection rpQueuedReplot\n"; std::cerr.flush();
 #endif
     replot(rpQueuedReplot);
   }
@@ -18700,7 +18704,7 @@ void QCPAxisRect::mouseMoveEvent(QMouseEvent *event, const QPointF &startPos)
       if (mParentPlot->noAntialiasingOnDrag())
         mParentPlot->setNotAntialiasedElements(QCP::aeAll);
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-      std::cerr << "QCPAxisRect::mouseMoveEvent rpQueuedReplot\n"; std::cerr.flush();
+      std::cerr << mParentPlot << " QCPAxisRect::mouseMoveEvent rpQueuedReplot\n"; std::cerr.flush();
 #endif
       mParentPlot->replot(QCustomPlot::rpQueuedReplot);
     }
@@ -18774,6 +18778,9 @@ void QCPAxisRect::wheelEvent(QWheelEvent *event)
             axis->scaleRange(factor, axis->pixelToCoord(pos.y()));
         }
       }
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+      std::cerr << mParentPlot << " QCPAxisRect::wheelEvent\n"; std::cerr.flush();
+#endif
       mParentPlot->replot();
     }
   }

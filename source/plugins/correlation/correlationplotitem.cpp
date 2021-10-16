@@ -359,12 +359,20 @@ CorrelationPlotItem::CorrelationPlotItem(QQuickItem* parent) :
 
     connect(&_customPlot, &QCustomPlot::afterReplot, [this]
     {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+        std::cerr << "afterReplot " << &_customPlot << "\n"; std::cerr.flush();
+#endif
         // The constructor of QCustomPlot does an initial replot scheduled in the UI event loop
         // We wait for it to complete before starting the render thread, otherwise we get into
         // the situation where the initial replot can potentially use the GL context created
         // on the render thread, which is obviously bad
         if(!_plotRenderThread.isRunning())
+        {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+            std::cerr << "  _plotRenderThread.start()\n"; std::cerr.flush();
+#endif
             _plotRenderThread.start();
+        }
     });
 
     connect(this, &QQuickPaintedItem::widthChanged, this, &CorrelationPlotItem::updatePlotSize);
