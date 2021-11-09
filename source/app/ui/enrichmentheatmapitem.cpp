@@ -28,6 +28,7 @@
 
 #include <set>
 #include <iterator>
+#include <iostream>
 
 EnrichmentHeatmapItem::EnrichmentHeatmapItem(QQuickItem* parent) :
     QCustomPlotQuickItem(multisamples(), parent),
@@ -35,6 +36,10 @@ EnrichmentHeatmapItem::EnrichmentHeatmapItem(QQuickItem* parent) :
     _colorScale(new QCPColorScale(&customPlot())),
     _hoverLabel(new QCPItemText(&customPlot()))
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "EnrichmentHeatmapItem::EnrichmentHeatmapItem " << &customPlot() << "\n"; std::cerr.flush();
+#endif
+
     customPlot().addLayer(QStringLiteral("textLayer"));
     customPlot().plotLayout()->setAutoMargins(QCP::MarginSide::msTop | QCP::MarginSide::msLeft);
 

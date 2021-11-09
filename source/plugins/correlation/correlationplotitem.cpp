@@ -233,7 +233,7 @@ void CorrelationPlotWorker::renderPixmap()
         _threadId = u::currentThreadId();
 
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-        std::cerr << "CorrelationPlotWorker::renderPixmap setOpenGl " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
+        std::cerr << "CorrelationPlotWorker::renderPixmap setOpenGl " << _customPlot <<  " " << u::currentThreadName().toStdString() << "\n"; std::cerr.flush();
 #endif
     }
 
@@ -312,6 +312,10 @@ CorrelationPlotItem::CorrelationPlotItem(QQuickItem* parent) :
     _mainLayoutGrid(new QCPLayoutGrid),
     _worker(new CorrelationPlotWorker(_mutex, _customPlot))
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "CorrelationPlotItem::CorrelationPlotItem " << &_customPlot << "\n"; std::cerr.flush();
+#endif
+
     // Discard the defaults...
     _customPlot.plotLayout()->clear();
 

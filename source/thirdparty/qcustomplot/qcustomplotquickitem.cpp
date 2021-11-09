@@ -27,7 +27,7 @@ QCustomPlotQuickItem::QCustomPlotQuickItem(int multisamples, QQuickItem* parent)
     QQuickPaintedItem(parent)
 {
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
-    std::cerr << "QCustomPlotQuickItem::QCustomPlotQuickItem\n"; std::cerr.flush();
+    std::cerr << "QCustomPlotQuickItem::QCustomPlotQuickItem " << &_customPlot << "\n"; std::cerr.flush();
 #endif
 
 #ifdef Q_OS_MACOS

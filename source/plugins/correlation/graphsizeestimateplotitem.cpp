@@ -26,10 +26,15 @@
 #include <QVector>
 
 #include <algorithm>
+#include <iostream>
 
 GraphSizeEstimatePlotItem::GraphSizeEstimatePlotItem(QQuickItem* parent) :
     QCustomPlotQuickItem(multisamples(), parent)
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "GraphSizeEstimatePlotItem::GraphSizeEstimatePlotItem " << &customPlot() << "\n"; std::cerr.flush();
+#endif
+
     connect(this, &GraphSizeEstimatePlotItem::uniqueEdgesOnlyChanged, [this] { buildPlot(); });
 }
 

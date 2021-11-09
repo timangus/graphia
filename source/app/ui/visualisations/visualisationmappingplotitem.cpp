@@ -24,10 +24,15 @@
 #include <QQmlEngine>
 
 #include <cmath>
+#include <iostream>
 
 VisualisationMappingPlotItem::VisualisationMappingPlotItem(QQuickItem* parent) :
     QCustomPlotQuickItem(multisamples(), parent)
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "VisualisationMappingPlotItem::VisualisationMappingPlotItem " << &customPlot() << "\n"; std::cerr.flush();
+#endif
+
     buildPlot();
 }
 

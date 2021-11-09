@@ -961,6 +961,13 @@ void QCPPaintBufferGlFbo::reallocateBuffer()
     return;
   }
   
+  if(context->thread() != QThread::currentThread())
+  {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+    std::cerr << "QCPPaintBufferGlFbo::reallocateBuffer on wrong thread (current is " << u::currentThreadName().toStdString() << ")\n"; std::cerr.flush();
+#endif
+  }
+
   // create new fbo with appropriate size:
   context->makeCurrent(context->surface());
   QOpenGLFramebufferObjectFormat frameBufferFormat;
@@ -15197,6 +15204,12 @@ void QCustomPlot::replot(QCustomPlot::RefreshPriority refreshPriority)
 # endif
   
   updateLayout();
+
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  std::cerr << " ...setupPaintBuffers() " << this << " " << u::currentThreadName().toStdString() << "\n";
+  std::cerr.flush();
+#endif
+
   // draw all layered objects (grid, axes, plottables, items, legend,...) into their buffers:
   setupPaintBuffers();
   foreach (QCPLayer *layer, mLayers)
@@ -15219,6 +15232,11 @@ void QCustomPlot::replot(QCustomPlot::RefreshPriority refreshPriority)
   else
     mReplotTimeAverage = mReplotTime; // no previous replots to average with, so initialize with replot time
   
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  std::cerr << " ...complete " << this << " " << u::currentThreadName().toStdString() << "\n";
+  std::cerr.flush();
+#endif
+
   emit afterReplot();
   mReplotting = false;
 }
