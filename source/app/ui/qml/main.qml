@@ -2391,6 +2391,8 @@ ApplicationWindow
                 // Make the tab title match the document title
                 tab.title = Qt.binding(function() { return tab.item.title });
 
+                console.log("***** Tab created", index);
+
                 return tab;
             }
 
@@ -2408,6 +2410,7 @@ ApplicationWindow
             {
                 let oldIndex = tabView.currentIndex;
 
+                console.log("***** Tab replaced", oldIndex);
                 removeTab(oldIndex);
                 insertTabAtIndex(oldIndex);
 
@@ -2462,6 +2465,7 @@ ApplicationWindow
                 {
                     onCloseFunction = function()
                     {
+                        console.log("***** Tab destroyed", index);
                         removeTab(index);
                     }
                 }
