@@ -964,12 +964,13 @@ void QCPPaintBufferGlFbo::reallocateBuffer()
     return;
   }
   
-  if(context->thread() != QThread::currentThread())
-  {
 #ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  if(context->thread() != QThread::currentThread())
     std::cerr << "QCPPaintBufferGlFbo::reallocateBuffer on wrong thread (current is " << u::currentThreadName().toStdString() << ")\n"; std::cerr.flush();
+
+  std::cerr << "    " << this << " QCPPaintBufferGlFbo::reallocateBuffer context: " << context.get() << " surface: " << context->surface() << "\n"; std::cerr.flush();
+  std::cerr << "      surface handle: " << context->surface()->surfaceHandle() << "\n"; std::cerr.flush();
 #endif
-  }
 
   // create new fbo with appropriate size:
   context->makeCurrent(context->surface());
