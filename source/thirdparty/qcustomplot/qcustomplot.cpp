@@ -589,6 +589,9 @@ QCPAbstractPaintBuffer::QCPAbstractPaintBuffer(const QSize &size, double deviceP
 
 QCPAbstractPaintBuffer::~QCPAbstractPaintBuffer()
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  std::cerr << this << " ~QCPAbstractPaintBuffer\n"; std::cerr.flush();
+#endif
 }
 
 /*!
@@ -13719,6 +13722,10 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
 
 QCustomPlot::~QCustomPlot()
 {
+#ifdef DEBUG_MACOS_QCUSTOMPLOT_CRASH
+  std::cerr << this << " ~QCustomPlot\n"; std::cerr.flush();
+#endif
+
   clearPlottables();
   clearItems();
 
