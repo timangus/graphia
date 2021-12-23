@@ -211,6 +211,11 @@ jobs:
         sudo apt-get install libc++-${{ env.CLANG_VERSION }}-dev libc++1-${{ env.CLANG_VERSION }} libc++abi-${{ env.CLANG_VERSION }}-dev libc++abi1-${{ env.CLANG_VERSION }}
         sudo apt-get install libunwind-${{ env.CLANG_VERSION }}-dev
         sudo apt-get install clang-tidy-${{ env.CLANG_VERSION }}
+        curl -Lo clang-tidy-cache https://github.com/ejfitzgerald/clang-tidy-cache/releases/download/v0.4.0/clang-tidy-cache-linux-amd64
+        chmod +x clang-tidy-cache
+        sudo mv clang-tidy-cache /usr/local/bin
+        mkdir -p ~/.ctcache
+        echo "{ \"clang_tidy_path\": \"/usr/bin/clang-tidy-${{ env.CLANG_VERSION }}\" }" > ~/.ctcache/config.json
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
@@ -227,7 +232,7 @@ jobs:
     - name: Analyse
       run: scripts/clang-tidy.sh
       env:
-        CLANGTIDY: clang-tidy-${{ env.CLANG_VERSION }}
+        CLANGTIDY: clang-tidy-cache
         BUILD_DIR: build/clang/
     - uses: actions/upload-artifact@v2
       with:
