@@ -215,6 +215,11 @@ jobs:
         sudo apt-get install libc++-${{ env.CLANG_VERSION }}-dev libc++1-${{ env.CLANG_VERSION }} libc++abi-${{ env.CLANG_VERSION }}-dev libc++abi1-${{ env.CLANG_VERSION }}
         sudo apt-get install libunwind-${{ env.CLANG_VERSION }}-dev
         sudo apt-get install clang-tidy-${{ env.CLANG_VERSION }}
+        pip3 install cltcache
+        PYTHON_PACKAGES_DIR=$(pip3 show -f cltcache | grep Location: | cut -d' ' -f2)
+        CLTCACHE_PY=$(pip3 show -f cltcache | grep cltcache.py | sed -e 's/ *//')
+        sudo sed -i -e 's/g++/clang++/' "${PYTHON_PACKAGES_DIR}/${CLTCACHE_PY}"
+        cat "${PYTHON_PACKAGES_DIR}/${CLTCACHE_PY}"
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:

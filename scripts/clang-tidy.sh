@@ -27,15 +27,27 @@ fi
 cd ${BUILD_DIR}
 
 . variables.sh
+echo "SYSTEM_INCLUDE_DIRS: ${SYSTEM_INCLUDE_DIRS}"
+echo "INCLUDE_DIRS: ${INCLUDE_DIRS}"
+echo "DEFINES: ${DEFINES}"
 
-if [ -z ${CLANGTIDY} ]
+if [ -z "${CLANGTIDY}" ]
 then
     CLANGTIDY="clang-tidy"
 fi
 
 ${CLANGTIDY} --version
-${CLANGTIDY} -dump-config
+${CLANGTIDY} --dump-config
+
+CLANGTIDY="${CLANGTIDY} --quiet -p ."
+
+CLTCACHE=$(which cltcache)
+if [[ ! -z "${CLTCACHE}" ]]
+then
+    CLANGTIDY="${CLTCACHE} ${CLANGTIDY} --quiet -p . -- \
+        ${SYSTEM_INCLUDE_DIRS} ${INCLUDE_DIRS} ${DEFINES} ${CMAKE_CXX_FLAGS}"
+fi
 
 parallel -k -n1 -P$(nproc --all) -q \
-  ${CLANGTIDY} -quiet -p . {} \
+  ${CLANGTIDY} {} \
   ::: ${CPP_FILES} 2>&1 | tee clang-tidy-${VERSION}.log
